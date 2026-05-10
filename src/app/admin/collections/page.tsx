@@ -10,6 +10,9 @@ export type ArtworkOption = {
   id: string
   title: string
   handle: string
+  collection_id: string | null
+  medium: string | null
+  featured: boolean
   cover_public_id: string | null
 }
 
@@ -25,7 +28,7 @@ export default async function AdminCollectionsPage() {
     supabase.from('collections').select('*').order('sort_order'),
     supabase
       .from('artworks')
-      .select('id, title, handle, artwork_images(cloudinary_public_id, position)')
+      .select('id, title, handle, collection_id, medium, featured, artwork_images(cloudinary_public_id, position)')
       .order('title'),
   ])
 
@@ -35,6 +38,9 @@ export default async function AdminCollectionsPage() {
       id: a.id,
       title: a.title,
       handle: a.handle,
+      collection_id: a.collection_id ?? null,
+      medium: a.medium ?? null,
+      featured: a.featured ?? false,
       cover_public_id: sorted[0]?.cloudinary_public_id ?? null,
     }
   })

@@ -12,6 +12,25 @@ type Props = {
   artworks: ArtworkOption[]
 }
 
+const MEDIUM_KEYWORDS: Record<string, string> = {
+  'oil-on-canvas':        'oil',
+  'watercolour':          'watercolour',
+  'tempera':              'tempera',
+  'mixed-media-on-paper': 'mixed',
+  'plywood':              'plywood',
+}
+
+function artworksForCollection(artworks: ArtworkOption[], collection: Collection): ArtworkOption[] {
+  if (collection.handle === 'featured-works') {
+    return artworks.filter((a) => a.featured)
+  }
+  const keyword = MEDIUM_KEYWORDS[collection.handle]
+  if (keyword) {
+    return artworks.filter((a) => a.medium?.toLowerCase().includes(keyword))
+  }
+  return artworks.filter((a) => a.collection_id === collection.id)
+}
+
 const BLANK = { title: '', handle: '', description: '', sort_order: '0', cover_artwork_id: '' }
 
 export default function CollectionsManager({ collections, artworks }: Props) {
@@ -44,10 +63,19 @@ export default function CollectionsManager({ collections, artworks }: Props) {
     setForm(BLANK)
   }
 
+  const editingCollection = collections.find((c) => c.id === editingId) ?? null
+
+  const collectionArtworks = useMemo(
+    () => editingCollection ? artworksForCollection(artworks, editingCollection) : artworks,
+    [artworks, editingCollection]
+  )
+
   const filteredArtworks = useMemo(() => {
     const q = artworkSearch.toLowerCase()
-    return q ? artworks.filter((a) => a.title.toLowerCase().includes(q) || a.handle.includes(q)) : artworks
-  }, [artworks, artworkSearch])
+    return q
+      ? collectionArtworks.filter((a) => a.title.toLowerCase().includes(q) || a.handle.includes(q))
+      : collectionArtworks
+  }, [collectionArtworks, artworkSearch])
 
   const selectedArtwork = artworks.find((a) => a.id === form.cover_artwork_id) ?? null
 
