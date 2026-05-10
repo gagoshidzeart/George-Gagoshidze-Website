@@ -19,6 +19,7 @@ export default async function CollectionsPage() {
   const { data: collections } = await supabase
     .from('collections')
     .select('*')
+    .eq('is_project', true)
     .order('sort_order')
 
   if (!collections || collections.length === 0) {
