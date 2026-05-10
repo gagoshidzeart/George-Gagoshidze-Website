@@ -463,6 +463,17 @@ a {
   animation-delay: calc(var(--animation-order, 0) * 75ms);
 }
 
+/* ─── Collection card ───────────────────────────────────────────────── */
+.collection-card {
+  display: block;
+  border: 0.1rem solid rgba(16, 57, 72, 0.1);
+  padding: 3.2rem;
+  transition: border-color var(--duration-default);
+}
+.collection-card:hover {
+  border-color: rgba(16, 57, 72, 0.4);
+}
+
 /* ─── Grid column helpers ───────────────────────────────────────────── */
 /* 3-col desktop → 2-col tablet → 1-col mobile */
 .grid__item {

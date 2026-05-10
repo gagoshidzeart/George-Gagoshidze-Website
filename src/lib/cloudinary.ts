@@ -3,7 +3,7 @@ export function cloudinaryUrl(
   options: { width?: number; height?: number; crop?: string } = {}
 ) {
   const cloud = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
-  const { width, height, crop = 'fill' } = options
+  const { width, height, crop = 'fit' } = options
 
   const transforms = ['f_auto', 'q_auto']
   if (width) transforms.push(`w_${width}`)

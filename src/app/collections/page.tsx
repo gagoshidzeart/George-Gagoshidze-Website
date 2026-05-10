@@ -21,15 +21,7 @@ export default async function CollectionsPage() {
             <Link
               key={c.id}
               href={`/collections/${c.handle}`}
-              className="grid__item"
-              style={{
-                display: 'block',
-                border: '0.1rem solid rgba(16,57,72,0.1)',
-                padding: '3.2rem',
-                transition: 'border-color var(--duration-default)',
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'rgba(16,57,72,0.4)')}
-              onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'rgba(16,57,72,0.1)')}
+              className="grid__item collection-card"
             >
               <h2 style={{ marginBottom: c.description ? '0.8rem' : 0 }}>{c.title}</h2>
               {c.description && (
