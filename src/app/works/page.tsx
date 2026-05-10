@@ -13,24 +13,37 @@ export default async function WorksPage({ searchParams }: Props) {
   const { collection } = await searchParams
   const supabase = await createClient()
 
-  const [{ data: artworks }, { data: collections }] = await Promise.all([
-    collection
-      ? supabase
-          .from('artworks')
-          .select('*, artwork_images(*), collections(*)')
-          .eq('collections.handle', collection)
-          .not('collection_id', 'is', null)
-          .order('sort_order')
-      : supabase
-          .from('artworks')
-          .select('*, artwork_images(*), collections(*)')
-          .order('sort_order'),
-    supabase.from('collections').select('*').order('sort_order'),
-  ])
+  // Always fetch collections for the filter UI
+  const { data: collections } = await supabase
+    .from('collections')
+    .select('*')
+    .order('sort_order')
 
-  const filtered = collection && artworks
-    ? (artworks as Artwork[]).filter((a) => (a as any).collections?.handle === collection)
-    : (artworks as Artwork[] | null)
+  let artworks: Artwork[] | null = null
+
+  if (collection) {
+    // Resolve collection handle → id first, then query artworks directly
+    const { data: col } = await supabase
+      .from('collections')
+      .select('id')
+      .eq('handle', collection)
+      .single()
+
+    if (col) {
+      const { data } = await supabase
+        .from('artworks')
+        .select('*, artwork_images(*)')
+        .eq('collection_id', col.id)
+        .order('sort_order')
+      artworks = data as Artwork[]
+    }
+  } else {
+    const { data } = await supabase
+      .from('artworks')
+      .select('*, artwork_images(*)')
+      .order('sort_order')
+    artworks = data as Artwork[]
+  }
 
   return (
     <div className="page-width" style={{ padding: '4rem 0 6rem' }}>
@@ -41,9 +54,9 @@ export default async function WorksPage({ searchParams }: Props) {
         )}
       </div>
 
-      {filtered && filtered.length > 0 ? (
+      {artworks && artworks.length > 0 ? (
         <div className="grid scroll-trigger animate--slide-in">
-          {filtered.map((artwork) => (
+          {artworks.map((artwork) => (
             <div key={artwork.id} className="grid__item">
               <ArtworkCard artwork={artwork} />
             </div>
