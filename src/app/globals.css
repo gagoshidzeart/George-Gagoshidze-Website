@@ -247,7 +247,7 @@ a {
   align-items: center;
   max-width: var(--page-width);
   margin: 0 auto;
-  padding: 1.8rem 3.2rem;
+  padding: 1.44rem 3.2rem;
 }
 
 @media (max-width: 749px) {

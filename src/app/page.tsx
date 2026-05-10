@@ -52,18 +52,12 @@ export default async function HomePage() {
         )}
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(5,44,70,0.6) 0%, transparent 60%)' }} />
         <div style={{ position: 'relative', zIndex: 10, padding: '4rem 3.2rem', color: '#fcfcfc' }}>
-          <h1 style={{ fontSize: 'calc(1.0909 * 5rem)', lineHeight: 1, marginBottom: '1.6rem', color: '#fcfcfc' }}>
-            George<br />Gagoshidze
-          </h1>
-          <p style={{ fontSize: '1.3rem', letterSpacing: '0.1rem', opacity: 0.8, marginBottom: '2.4rem' }}>
-            Georgian Artist
-          </p>
           <Link
             href="/works"
             className="btn"
             style={{ background: 'transparent', borderColor: '#fcfcfc', color: '#fcfcfc' }}
           >
-            View Works
+            Explore all paintings
           </Link>
         </div>
       </section>
