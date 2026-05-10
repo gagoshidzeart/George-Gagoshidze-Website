@@ -15,6 +15,10 @@ const bricolage = Bricolage_Grotesque({
 export const metadata: Metadata = {
   title: "George Gagoshidze — Artist",
   description: "Georgian artist George Gagoshidze — paintings, portfolio, and works for sale.",
+  icons: {
+    icon: '/logo.png',
+    apple: '/logo.png',
+  },
 };
 
 export default function RootLayout({

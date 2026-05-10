@@ -10,7 +10,7 @@ export const revalidate = 60
 export default async function HomePage() {
   const supabase = await createClient()
 
-  const [{ data: featuredArtworks }, { data: collections }, { data: heroData }] =
+  const [{ data: featuredArtworks }, { data: collections }, { data: heroRows }, { data: fallbackHero }] =
     await Promise.all([
       supabase
         .from('artworks')
@@ -22,11 +22,16 @@ export default async function HomePage() {
       supabase
         .from('artworks')
         .select('*, artwork_images(*)')
+        .eq('hero', true)
+        .limit(1),
+      supabase
+        .from('artworks')
+        .select('*, artwork_images(*)')
         .order('sort_order')
         .limit(1),
     ])
 
-  const hero = heroData?.[0] as Artwork | undefined
+  const hero = (heroRows?.[0] ?? fallbackHero?.[0]) as Artwork | undefined
   const heroPrimaryImage = hero?.artwork_images?.find((i) => i.position === 0) ?? hero?.artwork_images?.[0]
 
   return (

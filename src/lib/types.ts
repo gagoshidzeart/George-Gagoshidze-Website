@@ -29,6 +29,7 @@ export type Artwork = {
   collection_id: string | null
   description: string | null
   featured: boolean
+  hero: boolean
   sort_order: number
   created_at: string
   artwork_images?: ArtworkImage[]

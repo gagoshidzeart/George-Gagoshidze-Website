@@ -24,6 +24,7 @@ export default function ArtworkForm({ artwork, collections }: Props) {
     price: artwork?.price?.toString() ?? '',
     sold: artwork?.sold ?? false,
     featured: artwork?.featured ?? false,
+    hero: artwork?.hero ?? false,
     collection_id: artwork?.collection_id ?? '',
     description: artwork?.description ?? '',
     sort_order: artwork?.sort_order?.toString() ?? '0',
@@ -245,6 +246,16 @@ export default function ArtworkForm({ artwork, collections }: Props) {
               className="w-4 h-4 accent-stone-400"
             />
             <span className="text-sm text-stone-300">Featured on homepage</span>
+          </label>
+
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={form.hero}
+              onChange={(e) => setForm({ ...form, hero: e.target.checked })}
+              className="w-4 h-4 accent-amber-400"
+            />
+            <span className="text-sm text-amber-300">Hero image (homepage banner)</span>
           </label>
         </div>
 
