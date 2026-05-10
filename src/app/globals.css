@@ -542,6 +542,66 @@ a {
   }
 }
 
+/* ─── About page ────────────────────────────────────────────────────── */
+.about-bio {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6rem;
+  align-items: center;
+  margin-bottom: 8rem;
+  padding-bottom: 8rem;
+  border-bottom: 0.1rem solid rgba(16, 57, 72, 0.08);
+}
+@media (max-width: 749px) {
+  .about-bio { grid-template-columns: 1fr; gap: 3.2rem; margin-bottom: 5rem; padding-bottom: 5rem; }
+}
+.about-bio__image {
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+}
+
+.about-journey {
+  padding-bottom: 4rem;
+}
+
+.about-era {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6rem;
+  align-items: center;
+  margin-bottom: 8rem;
+}
+.about-era--reverse { direction: rtl; }
+.about-era--reverse > * { direction: ltr; }
+@media (max-width: 749px) {
+  .about-era { grid-template-columns: 1fr; gap: 3.2rem; margin-bottom: 5rem; direction: ltr !important; }
+  .about-era--reverse > * { direction: ltr; }
+}
+
+.about-era__image {
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+}
+.about-era__image img {
+  transition: transform var(--duration-long);
+}
+.about-era:hover .about-era__image img {
+  transform: scale(1.02);
+}
+
+.about-era__content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+.about-era__content h3 {
+  font-size: calc(1.0909 * 1.8rem);
+  color: rgb(16, 57, 72);
+}
+.about-era__link {
+  align-self: flex-start;
+}
+
 /* ─── Forms ─────────────────────────────────────────────────────────── */
 .field__label {
   display: block;
