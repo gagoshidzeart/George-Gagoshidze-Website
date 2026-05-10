@@ -13,7 +13,7 @@ export default function ScrollReveal() {
           }
         })
       },
-      { threshold: 0.1 }
+      { threshold: 0 }
     )
 
     document.querySelectorAll('.scroll-trigger').forEach((el) => {
