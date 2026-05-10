@@ -26,7 +26,7 @@ export default function ArtworkGallery({ images, title }: Props) {
           src={cloudinaryUrl(active.cloudinary_public_id, { width: 900, height: 1200 })}
           alt={active.alt_text ?? title}
           fill
-          className="object-contain"
+          className=""
           sizes="(max-width: 749px) 100vw, 50vw"
           priority
         />

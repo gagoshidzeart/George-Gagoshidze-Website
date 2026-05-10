@@ -22,7 +22,7 @@ export default function ArtworkCard({ artwork }: Props) {
             alt={primaryImage?.alt_text ?? artwork.title}
             fill
             sizes="(max-width: 749px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            className="object-contain"
+            className=""
           />
         ) : (
           <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(16,57,72,0.3)', fontSize: '1.3rem' }}>
