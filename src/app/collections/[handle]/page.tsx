@@ -3,11 +3,19 @@ import { createClient } from '@/lib/supabase/server'
 import ArtworkCard from '@/components/ArtworkCard'
 import type { Artwork, Collection } from '@/lib/types'
 
+export const revalidate = 60
+
+const MEDIUM_FILTERS: Record<string, string> = {
+  'oil-on-canvas':        '%oil%',
+  'watercolour':          '%watercolour%',
+  'tempera':              '%tempera%',
+  'mixed-media-on-paper': '%mixed%',
+  'plywood':              '%plywood%',
+}
+
 type Props = {
   params: Promise<{ handle: string }>
 }
-
-export const revalidate = 60
 
 export default async function CollectionPage({ params }: Props) {
   const { handle } = await params
@@ -21,11 +29,30 @@ export default async function CollectionPage({ params }: Props) {
 
   if (!collection) notFound()
 
-  const { data: artworks } = await supabase
-    .from('artworks')
-    .select('*, artwork_images(*)')
-    .eq('collection_id', (collection as Collection).id)
-    .order('sort_order')
+  let artworks: Artwork[] | null = null
+
+  if (handle === 'featured-works') {
+    const { data } = await supabase
+      .from('artworks')
+      .select('*, artwork_images(*)')
+      .eq('featured', true)
+      .order('sort_order')
+    artworks = data as Artwork[]
+  } else if (MEDIUM_FILTERS[handle]) {
+    const { data } = await supabase
+      .from('artworks')
+      .select('*, artwork_images(*)')
+      .ilike('medium', MEDIUM_FILTERS[handle])
+      .order('sort_order')
+    artworks = data as Artwork[]
+  } else {
+    const { data } = await supabase
+      .from('artworks')
+      .select('*, artwork_images(*)')
+      .eq('collection_id', (collection as Collection).id)
+      .order('sort_order')
+    artworks = data as Artwork[]
+  }
 
   return (
     <div className="page-width" style={{ padding: '4rem 0 6rem' }}>

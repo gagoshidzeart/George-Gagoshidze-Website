@@ -171,7 +171,7 @@ export default function AboutPage() {
               memory, and emotional weight. This is where the journey begins: with place, not as
               geography alone, but as lived experience.
             </p>
-            <Link href="/collections/2010-2011" className="btn btn--outline about-era__link">
+            <Link href="/collections/2010-2013" className="btn btn--outline about-era__link">
               Explore the project
             </Link>
           </div>

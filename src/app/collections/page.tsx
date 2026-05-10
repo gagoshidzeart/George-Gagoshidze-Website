@@ -6,6 +6,14 @@ import type { Collection } from '@/lib/types'
 
 export const revalidate = 60
 
+const MEDIUM_FILTERS: Record<string, string> = {
+  'oil-on-canvas':        '%oil%',
+  'watercolour':          '%watercolour%',
+  'tempera':              '%tempera%',
+  'mixed-media-on-paper': '%mixed%',
+  'plywood':              '%plywood%',
+}
+
 export default async function CollectionsPage() {
   const supabase = await createClient()
   const { data: collections } = await supabase
@@ -22,30 +30,52 @@ export default async function CollectionsPage() {
     )
   }
 
-  // Fetch first artwork image for each collection in parallel
+  // Fetch cover image for each collection in parallel
   const coverImages = await Promise.all(
     (collections as Collection[]).map(async (c) => {
-      const { data } = await supabase
-        .from('artworks')
-        .select('artwork_images(cloudinary_public_id, alt_text)')
-        .eq('collection_id', c.id)
-        .order('sort_order')
-        .limit(1)
-        .single()
-      const img = (data as any)?.artwork_images?.[0]
-      return { collectionId: c.id, publicId: img?.cloudinary_public_id ?? null, alt: img?.alt_text ?? c.title }
+      let data: any = null
+
+      if (c.handle === 'featured-works') {
+        const res = await supabase
+          .from('artworks')
+          .select('artwork_images(cloudinary_public_id, alt_text)')
+          .eq('featured', true)
+          .order('sort_order')
+          .limit(1)
+          .single()
+        data = res.data
+      } else if (MEDIUM_FILTERS[c.handle]) {
+        const res = await supabase
+          .from('artworks')
+          .select('artwork_images(cloudinary_public_id, alt_text)')
+          .ilike('medium', MEDIUM_FILTERS[c.handle])
+          .order('sort_order')
+          .limit(1)
+          .single()
+        data = res.data
+      } else {
+        const res = await supabase
+          .from('artworks')
+          .select('artwork_images(cloudinary_public_id, alt_text)')
+          .eq('collection_id', c.id)
+          .order('sort_order')
+          .limit(1)
+          .single()
+        data = res.data
+      }
+
+      const img = data?.artwork_images?.[0]
+      return { publicId: img?.cloudinary_public_id ?? null, alt: img?.alt_text ?? c.title }
     })
   )
-
-  const coverMap = Object.fromEntries(coverImages.map((ci) => [ci.collectionId, ci]))
 
   return (
     <div className="page-width" style={{ padding: '4rem 0 6rem' }}>
       <h1 style={{ marginBottom: '4rem' }}>Projects</h1>
 
       <div className="collections-grid">
-        {(collections as Collection[]).map((c) => {
-          const cover = coverMap[c.id]
+        {(collections as Collection[]).map((c, i) => {
+          const cover = coverImages[i]
           return (
             <Link
               key={c.id}

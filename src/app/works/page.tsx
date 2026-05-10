@@ -5,6 +5,15 @@ import type { Artwork, Collection } from '@/lib/types'
 
 export const revalidate = 60
 
+// Medium collections filter by the `medium` text field rather than collection_id
+const MEDIUM_FILTERS: Record<string, string> = {
+  'oil-on-canvas':        '%oil%',
+  'watercolour':          '%watercolour%',
+  'tempera':              '%tempera%',
+  'mixed-media-on-paper': '%mixed%',
+  'plywood':              '%plywood%',
+}
+
 type Props = {
   searchParams: Promise<{ collection?: string }>
 }
@@ -13,7 +22,6 @@ export default async function WorksPage({ searchParams }: Props) {
   const { collection } = await searchParams
   const supabase = await createClient()
 
-  // Always fetch collections for the filter UI
   const { data: collections } = await supabase
     .from('collections')
     .select('*')
@@ -22,20 +30,38 @@ export default async function WorksPage({ searchParams }: Props) {
   let artworks: Artwork[] | null = null
 
   if (collection) {
-    // Resolve collection handle → id first, then query artworks directly
-    const { data: col } = await supabase
-      .from('collections')
-      .select('id')
-      .eq('handle', collection)
-      .single()
-
-    if (col) {
+    if (collection === 'featured-works') {
+      // Featured works collection
       const { data } = await supabase
         .from('artworks')
         .select('*, artwork_images(*)')
-        .eq('collection_id', col.id)
+        .eq('featured', true)
         .order('sort_order')
       artworks = data as Artwork[]
+    } else if (MEDIUM_FILTERS[collection]) {
+      // Medium-based collection — filter by medium field
+      const { data } = await supabase
+        .from('artworks')
+        .select('*, artwork_images(*)')
+        .ilike('medium', MEDIUM_FILTERS[collection])
+        .order('sort_order')
+      artworks = data as Artwork[]
+    } else {
+      // Year/era collection — resolve handle → id
+      const { data: col } = await supabase
+        .from('collections')
+        .select('id')
+        .eq('handle', collection)
+        .single()
+
+      if (col) {
+        const { data } = await supabase
+          .from('artworks')
+          .select('*, artwork_images(*)')
+          .eq('collection_id', col.id)
+          .order('sort_order')
+        artworks = data as Artwork[]
+      }
     }
   } else {
     const { data } = await supabase
