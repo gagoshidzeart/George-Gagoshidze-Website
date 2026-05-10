@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect, useRef } from 'react'
 
@@ -67,7 +68,14 @@ export default function Nav() {
           {/* Logo (grid-area: heading) */}
           <div className="header__heading">
             <Link href="/" className="header__heading-link">
-              George Gagoshidze
+              <Image
+                src="/logo.png"
+                alt="George Gagoshidze"
+                width={140}
+                height={50}
+                style={{ objectFit: 'contain', objectPosition: 'left center' }}
+                priority
+              />
             </Link>
           </div>
 
@@ -109,6 +117,9 @@ export default function Nav() {
         aria-label="Mobile navigation"
         aria-hidden={!drawerOpen}
       >
+        <Link href="/" style={{ marginBottom: '2rem' }}>
+          <Image src="/logo.png" alt="George Gagoshidze" width={120} height={44} style={{ objectFit: 'contain' }} />
+        </Link>
         <button
           onClick={() => setDrawerOpen(false)}
           aria-label="Close menu"
