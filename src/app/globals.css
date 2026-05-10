@@ -241,8 +241,8 @@ a {
 
 .header {
   display: grid;
-  grid-template-areas: 'heading navigation icons';
-  grid-template-columns: auto 1fr auto;
+  grid-template-areas: 'navigation heading icons';
+  grid-template-columns: 1fr auto 1fr;
   column-gap: 2rem;
   align-items: center;
   max-width: var(--page-width);
@@ -259,9 +259,16 @@ a {
   .header__inline-menu { display: none; }
 }
 
-.header__heading { grid-area: heading; }
+.header__heading {
+  grid-area: heading;
+  display: flex;
+  justify-content: center;
+}
 .header__inline-menu { grid-area: navigation; }
-.header__icons { grid-area: icons; }
+.header__icons {
+  grid-area: icons;
+  justify-content: flex-end;
+}
 
 .header__heading-link {
   display: inline-block;

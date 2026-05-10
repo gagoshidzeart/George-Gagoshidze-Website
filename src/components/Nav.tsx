@@ -73,7 +73,7 @@ export default function Nav() {
                 alt="George Gagoshidze"
                 width={140}
                 height={50}
-                style={{ objectFit: 'contain', objectPosition: 'left center' }}
+                style={{ objectFit: 'contain', mixBlendMode: 'multiply' }}
                 priority
               />
             </Link>
