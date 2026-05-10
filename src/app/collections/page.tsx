@@ -32,10 +32,26 @@ export default async function CollectionsPage() {
   }
 
   // Fetch cover image for each collection in parallel
+  // Uses cover_artwork_id if explicitly set; otherwise auto-picks the first artwork
   const coverImages = await Promise.all(
     (collections as Collection[]).map(async (c) => {
       let data: any = null
 
+      if (c.cover_artwork_id) {
+        // Manually chosen cover
+        const res = await supabase
+          .from('artworks')
+          .select('title, artwork_images(cloudinary_public_id, alt_text, position)')
+          .eq('id', c.cover_artwork_id)
+          .single()
+        data = res.data
+        if (data) {
+          const sorted = (data.artwork_images ?? []).sort((a: any, b: any) => a.position - b.position)
+          return { publicId: sorted[0]?.cloudinary_public_id ?? null, alt: sorted[0]?.alt_text ?? c.title }
+        }
+      }
+
+      // Auto-pick: first artwork in the collection
       if (c.handle === 'featured-works') {
         const res = await supabase
           .from('artworks')

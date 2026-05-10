@@ -4,6 +4,8 @@ export type Collection = {
   title: string
   description: string | null
   sort_order: number
+  is_project: boolean
+  cover_artwork_id: string | null
   created_at: string
 }
 

@@ -1,19 +1,24 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import type { Collection } from '@/lib/types'
+import type { ArtworkOption } from '@/app/admin/collections/page'
+import { cloudinaryUrl } from '@/lib/cloudinary'
 
 type Props = {
   collections: Collection[]
+  artworks: ArtworkOption[]
 }
 
-const BLANK = { title: '', handle: '', description: '', sort_order: '0' }
+const BLANK = { title: '', handle: '', description: '', sort_order: '0', cover_artwork_id: '' }
 
-export default function CollectionsManager({ collections }: Props) {
+export default function CollectionsManager({ collections, artworks }: Props) {
   const router = useRouter()
   const [form, setForm] = useState(BLANK)
   const [editingId, setEditingId] = useState<string | null>(null)
+  const [artworkSearch, setArtworkSearch] = useState('')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
@@ -23,18 +28,28 @@ export default function CollectionsManager({ collections }: Props) {
 
   function startEdit(c: Collection) {
     setEditingId(c.id)
+    setArtworkSearch('')
     setForm({
       title: c.title,
       handle: c.handle,
       description: c.description ?? '',
       sort_order: c.sort_order.toString(),
+      cover_artwork_id: c.cover_artwork_id ?? '',
     })
   }
 
   function cancelEdit() {
     setEditingId(null)
+    setArtworkSearch('')
     setForm(BLANK)
   }
+
+  const filteredArtworks = useMemo(() => {
+    const q = artworkSearch.toLowerCase()
+    return q ? artworks.filter((a) => a.title.toLowerCase().includes(q) || a.handle.includes(q)) : artworks
+  }, [artworks, artworkSearch])
+
+  const selectedArtwork = artworks.find((a) => a.id === form.cover_artwork_id) ?? null
 
   async function handleSave() {
     setSaving(true)
@@ -43,6 +58,7 @@ export default function CollectionsManager({ collections }: Props) {
       const payload = {
         ...form,
         sort_order: parseInt(form.sort_order) || 0,
+        cover_artwork_id: form.cover_artwork_id || null,
       }
       const url = editingId ? `/api/admin/collections/${editingId}` : '/api/admin/collections'
       const method = editingId ? 'PUT' : 'POST'
@@ -82,6 +98,7 @@ export default function CollectionsManager({ collections }: Props) {
           {editingId ? 'Edit Collection' : 'New Collection'}
         </h2>
         {error && <p className="text-sm text-red-400 mb-4">{error}</p>}
+
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className={labelClass}>Title</label>
@@ -120,6 +137,75 @@ export default function CollectionsManager({ collections }: Props) {
             />
           </div>
         </div>
+
+        {/* Cover artwork picker */}
+        <div className="mt-4">
+          <label className={labelClass}>Cover Image</label>
+          <div className="flex gap-4 items-start">
+            {/* Current selection preview */}
+            <div className="flex-shrink-0 w-20 h-24 bg-stone-700 relative overflow-hidden">
+              {selectedArtwork?.cover_public_id ? (
+                <Image
+                  src={cloudinaryUrl(selectedArtwork.cover_public_id, { width: 160, height: 200 })}
+                  alt={selectedArtwork.title}
+                  fill
+                  className="object-cover"
+                />
+              ) : (
+                <div className="absolute inset-0 flex items-center justify-center text-stone-500 text-xs text-center px-1">
+                  Auto (first artwork)
+                </div>
+              )}
+            </div>
+
+            <div className="flex-1 space-y-2">
+              <input
+                className={inputClass}
+                placeholder="Search artworks…"
+                value={artworkSearch}
+                onChange={(e) => setArtworkSearch(e.target.value)}
+              />
+              <div className="border border-stone-700 max-h-48 overflow-y-auto">
+                <button
+                  type="button"
+                  onClick={() => { setForm((f) => ({ ...f, cover_artwork_id: '' })); setArtworkSearch('') }}
+                  className={`w-full text-left px-3 py-2 text-sm transition-colors ${
+                    !form.cover_artwork_id
+                      ? 'bg-stone-600 text-white'
+                      : 'text-stone-400 hover:bg-stone-700 hover:text-white'
+                  }`}
+                >
+                  — Auto (first artwork in collection)
+                </button>
+                {filteredArtworks.map((a) => (
+                  <button
+                    key={a.id}
+                    type="button"
+                    onClick={() => { setForm((f) => ({ ...f, cover_artwork_id: a.id })); setArtworkSearch('') }}
+                    className={`w-full text-left px-3 py-2 text-sm transition-colors flex items-center gap-2 ${
+                      form.cover_artwork_id === a.id
+                        ? 'bg-stone-600 text-white'
+                        : 'text-stone-300 hover:bg-stone-700 hover:text-white'
+                    }`}
+                  >
+                    {a.cover_public_id && (
+                      <div className="relative w-7 h-8 flex-shrink-0 overflow-hidden">
+                        <Image
+                          src={cloudinaryUrl(a.cover_public_id, { width: 56, height: 64 })}
+                          alt={a.title}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                    )}
+                    <span className="truncate">{a.title}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div className="flex gap-4 mt-4">
           <button
             onClick={handleSave}
