@@ -55,7 +55,7 @@ export default async function WorksPage({ searchParams }: Props) {
       </div>
 
       {artworks && artworks.length > 0 ? (
-        <div className="grid scroll-trigger animate--slide-in">
+        <div className="grid">
           {artworks.map((artwork) => (
             <div key={artwork.id} className="grid__item">
               <ArtworkCard artwork={artwork} />

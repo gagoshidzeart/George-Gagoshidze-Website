@@ -465,15 +465,48 @@ a {
   animation-delay: calc(var(--animation-order, 0) * 75ms);
 }
 
-/* ─── Collection card ───────────────────────────────────────────────── */
+/* ─── Collections grid ──────────────────────────────────────────────── */
+.collections-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+@media (min-width: 750px) {
+  .collections-grid { gap: 40px; }
+}
+
 .collection-card {
   display: block;
-  border: 0.1rem solid rgba(16, 57, 72, 0.1);
-  padding: 3.2rem;
-  transition: border-color var(--duration-default);
+  width: 100%;
+  text-decoration: none;
+  color: inherit;
 }
-.collection-card:hover {
-  border-color: rgba(16, 57, 72, 0.4);
+@media (min-width: 750px) {
+  .collection-card { width: calc(50% - 20px); }
+}
+@media (min-width: 990px) {
+  .collection-card { width: calc(33.333% - 27px); }
+}
+
+.collection-card__image {
+  position: relative;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  background: #ebeced;
+  margin-bottom: 1.2rem;
+}
+.collection-card__image img {
+  transition: transform var(--duration-long);
+}
+.collection-card:hover .collection-card__image img {
+  transform: scale(1.03);
+}
+
+.collection-card__content {
+  text-align: center;
+}
+.collection-card__content h2 {
+  font-size: calc(1.0909 * 1.5rem);
 }
 
 /* ─── Grid column helpers ───────────────────────────────────────────── */
